@@ -1,0 +1,208 @@
+<!--{template home/space_header}-->
+<!--{eval space_merge($space, 'count');}-->
+<div id="ct" class="w cl" style="">
+	<div id="l_space_pace">
+		<div id="l_right" class="y">
+			<div id="l_friend">
+				<!--{eval}-->
+				<!--
+					if($space[feedfriend]) {
+						$feedfriend = explode(',',$space[feedfriend]);					getonlinemember($fuids);
+
+						foreach(C::t('common_member')->fetch_all($feedfriend) as $value) {
+							$classname = $_G['ols'][$value['fuid']]?'gol':'';
+
+							$l_friend .= '<li><cite><a href="home.php?mod=space&uid='.$value['uid'].'" target="_blank" class="avt" c="1" title="'.$value['username'].'"><em class="'.$classname.'"></em>'.avatar($value['uid'],'small').'<p>'.$value['username'].'</p></a></cite></li>';
+						}
+
+						$l_friend = '<ul>'.$l_friend.'</ul>';
+					}
+					
+				-->
+				<!--{/eval}-->
+				<div class="l_space_title"><span><a href="home.php?mod=space&uid=$space[uid]&do=friend&view=me&from=space" target="_blank">{lang friends}</a></span></div>
+				<div>
+				$l_friend
+				<div style="clear:both"></div>
+				</div>
+			</div>
+
+			
+			<!--{eval}-->
+			<!--
+				$list = $fuids = array();
+				foreach(C::t('home_visitor')->fetch_all_by_uid($uid, $shownum) as $value) {
+					$list[] = $value;
+					$fuids[] = $value['vuid'];
+				}
+
+				getonlinemember($fuids);
+				$i = 0;
+
+				foreach($list as $value) {
+					$i++;
+					if($i == 1) {
+						$l_visitor .= "</div>";
+					}
+
+					$l_visitor .= "<li>";
+					if ($value['vusername'] == '') {
+						$l_visitor .= lang('space', 'visitor_anonymity');
+					} else {
+						$l_visitor_time = dgmdate($value['dateline'],'', '9999', 'Y-m-d H:i:s');
+						$l_visitor_class = ($_G['ols'][$value['vuid']]?'gol':'');
+						$l_visitor_self = $value['vuid'] == $_G['uid'] ? 'god' : '';
+
+						$l_visitor .= '<cite><a href="home.php?mod=space&uid='.$value['vuid'].'" target="_blank" class="avt" c="1" title="'.$value['vusername'].'&nbsp;'.$l_visitor_time.'"><em class="'.$l_visitor_class.'"></em><p>'.$value['vusername'].'</p>'.avatar($value['vuid'],'small').'</a><em class="'.$l_visitor_self.'" onclick="javascript:removeVisitor(event, '.$uid.');" title="删除访问足迹"></em></cite>';
+					}
+					$l_visitor .= "</li>";
+				}
+				$l_visitor = !$l_visitor ? '<p class="emp">'.lang('space','block_visitor_no_content').($space['self'] ? lang('space', 'block_visitor_no_content_publish', $space) : '').'</p>' : '<ul class="ml mls cl"><div style="display:none">'.$l_visitor.'</ul>';
+
+			-->
+			<!--{/eval}-->
+			<div id="l_visitor">
+				<div class="l_space_title"><a href="home.php?mod=space&uid=$space[uid]&do=friend&view=visitor"><span>{$_G['style']['l_visitor']}</span></a></div>
+				<div>
+					$l_visitor
+					<div style="clear:both"></div>
+				</div>
+			</div>
+		</div>
+		<div id="l_center" class="z">
+			<div id="l_feed">
+				<div class="l_space_title"><a href="home.php?mod=space&uid=$space[uid]&do=home&view=me&from=space"><span>{$_G['style']['l_feed']}</span></a></div>
+				<div>
+					<!--{eval}-->
+					<!--
+					if(!IS_ROBOT && ckprivacy('feed', 'view')) {
+						require_once libfile('function/feed');
+						$home_feed = C::t('home_feed')->fetch_all_by_uid_dateline($uid, false, 0, 5);
+						foreach($home_feed as $value) {
+
+							if(ckfriend($value['uid'], $value['friend'], $value['target_ids'])) {
+								$l_feed .=  mkfeedhtml(mkfeed($value));
+							}
+						}
+					}
+					$contenttagname = 'ul';
+					$contentclassname = ' el';
+					$l_feed = !$l_feed ?  '<p class="emp">'.lang('space','block_feed_no_content').'</p>' : $l_feed;
+					-->
+					<!--{/eval}-->
+					<ul>$l_feed</ul>
+					<div style="clear:both"></div>
+				</div>
+			</div>
+
+			<!--{eval}-->
+			<!--
+			if(!empty($space[threads])){
+				if ($_G['setting']['allowviewuserthread'] !== -1) {
+					$fidsql = empty($_G['setting']['allowviewuserthread']) ? '' : " AND fid IN({$_G[setting][allowviewuserthread]}) ";
+					$viewfids = str_replace("'", '', $_G['setting']['allowviewuserthread']);
+					if(!empty($viewfids)) {
+						$viewfids = explode(',', $viewfids);
+					}
+
+					foreach(C::t('forum_thread')->fetch_all_by_authorid_displayorder($uid, 0, '>=', null, '', 0, 20) as $thread) {
+						if(!empty($viewfids) && $_G['adminid'] != 1 && !in_array($thread['fid'], $viewfids)) {
+							continue;
+						}
+						if($thread['author']) {
+							$l_thread .= "<li><a href=\"forum.php?mod=viewthread&tid={$thread['tid']}\" target=\"_blank\">{$thread['subject']}</a></li>";
+						}
+					}
+				}
+				$l_thread = !$l_thread ? '<p class="emp">'.lang('space','block_thread_no_content').($space['self'] ? lang('space', 'block_thread_no_content_publish', $space) : '').'</p>' : '<ul>'.$l_thread.'</ul>';
+			}
+			-->
+			<!--{/eval}-->
+			<!--{if $l_thread}-->
+			<div id="l_thread">
+				<div class="l_space_title"><span>{$_G['style']['l_thread']}</span></div>
+				<div>
+					$l_thread
+					<div style="clear:both"></div>
+				</div>
+			</div>
+			<!--{/if}-->
+
+			
+			<!--{eval}-->
+			<!--
+			if(!empty($space[albums])){
+				$tmp_query_one = C::t('home_album')->fetch_all_by_uid($space['uid'], 'updatetime', 0, 100);
+				if(!empty($tmp_query_one)) {
+					foreach($tmp_query_one as $value) {
+						if(empty($value['friend']) && empty($value['password'])) {
+							$piclck[] = $value[albumid];
+						}
+					}
+					$piclckid = implode(',',$piclck);
+
+					$home_pic = DB::fetch_all("SELECT * FROM ".DB::table('home_pic')." WHERE uid='$uid' AND albumid in ($piclckid) ORDER BY picid DESC LIMIT 0, 5");
+
+					foreach($home_pic as $value) {
+						$picid = $value['picid'];
+						$filename = $value['filename'];
+						$filepath = $value['filepath'];
+						$type = $value['type'];
+						$date = dgmdate($value['dateline'],'n-j');
+
+						$l_album .= '<a href="home.php?mod=space&uid='.$uid.'&do=album&picid='.$picid.'" target="_blank" title="'.$filename.'"><img src="'.$_G['setting'][attachurl] .'album/'.$filepath.'.thumb.jpg" alt="'.$filename.'" /></a>';
+					}
+					$l_album = '<div class="pns mlnv vm mtm cl">'.$l_album.'</div>';
+				}
+			}	
+			-->
+			<!--{/eval}-->
+			<!--{if $l_album}-->
+			<div id="l_album">
+				<div class="l_space_title"><span>{$_G['style']['l_album']}</span></div>
+				<div class="l_space_album_c">
+					$l_album
+					<div class="l_space_album_more">
+						<a href="home.php?mod=space&uid=$space[uid]&do=album&view=me&from=space"><img src="$_G['style'][styleimgdir]/l_space_album_more.png" title="{$_G['style']['l_space_album_more']}" alt="" class="fixpng" style="border: none; padding: 0; margin: 0;"></a>
+					</div>
+					<div style="clear:both"></div>
+				</div>
+			</div>
+			<!--{/if}-->
+
+			
+			<!--{eval}-->
+			<!--
+				require_once libfile('function/group');
+
+				$grouplist = mygrouplist($uid, 'lastupdate', array('f.name', 'ff.icon'), 8);
+
+				//print_r($grouplist);
+				if(empty($grouplist)) $grouplist = array();
+				foreach ($grouplist as $groupid => $group) {
+					$group['groupid'] = $groupid;
+							//$query = C::t('forum_forum')->fetch_all_info_by_fids($groupid);
+							//foreach($query as $row) {
+							//		$membernum = $row['membernum'];
+							//	}
+					$l_group .= '<li><dl><dd class="group_icon"><a href="forum.php?mod=group&fid='.$group['groupid'].'" target="_blank"><img src="'.$group['icon'].'" alt="'.$group['name'].'" /></a></dd><dt><a href="forum.php?mod=group&fid='.$group['groupid'].'" target="_blank">'.$group['name'].'</a></dt><dd><em class="group_threads">'.$group['threads'].'</em> '.$_G['style']['l_group_threads'].'</dd></dl></li>';
+						}	
+				$l_group = !$l_group ? '<p class="emp">'.lang('space','block_group_no_content').($space['self'] ? lang('space', ($_G['group']['allowbuildgroup'] ? 'block_group_no_content_publish' : 'block_group_no_content_join'), $space) : '').'</p>' : '<ul>'.$l_group.'</ul>';	
+			-->
+			<!--{/eval}-->
+			<div id="l_group">
+				<div class="l_space_title"><span>{$_G['style']['l_group']}</span></div>
+				<div>
+					$l_group
+				</div>
+				<div style="clear:both"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="diypage" class="area"></div>
+<div style="clear:both"></div>
+</div>
+<!--{template common/footer}-->
+
+

@@ -1,0 +1,41 @@
+<!--{if $_G['uid']}-->
+<div id="um">
+	<div class="avt y">
+		<!--{eval $pm_count = ($_G[member][newpm] + $_G[member][newprompt])}-->
+		<!--{if $pm_count > 0 && $pm_count < 100}-->
+			<p>
+				<em>$pm_count</em>
+			</p>
+		<!--{elseif $pm_count > 99}-->
+			<p>
+				<em>99</em>
+			</p>
+		<!--{/if}-->
+		<a href="home.php?mod=space&uid=$_G[uid]" id="qmenu" onmouseover="showMenu({'ctrlid':'qmenu','pos':'34!','ctrlclass':'a','duration':2});showForummenu($_G[fid]);"  title="{lang visit_my_space}"><em>{$_G[member][username]}</em><!--{avatar($_G[uid],small)}--></a>
+	</div>
+	<div class="extra1"><!--{hook/global_usernav_extra1}--></div>
+</div>
+
+<!--{elseif !empty($_G['cookie']['loginuser'])}-->
+<p>
+	<strong><a id="loginuser" class="noborder"><!--{echo dhtmlspecialchars($_G['cookie']['loginuser'])}--></a></strong>
+	<span class="pipe">|</span><a href="member.php?mod=logging&action=login" onclick="showWindow('login', this.href)">{lang activation}</a>
+	<span class="pipe">|</span><a href="member.php?mod=logging&action=logout&formhash={FORMHASH}">{lang logout}</a>
+</p>
+<!--{elseif !$_G[connectguest]}-->
+	<!--{template member/login_simple}-->
+<!--{else}-->
+<div id="um">
+	<div class="avt y"><!--{avatar(0,small)}--></div>
+	<p>
+		<strong class="vwmy qq">{$_G[member][username]}</strong>
+		<!--{hook/global_usernav_extra1}-->
+		<span class="pipe">|</span><a href="member.php?mod=logging&action=logout&formhash={FORMHASH}">{lang logout}</a>
+	</p>
+	<p>
+		<a href="home.php?mod=spacecp&ac=credit&showcredit=1">{lang credits}: 0</a>
+		<span class="pipe">|</span>{lang usergroup}: $_G[group][grouptitle]
+	</p>
+</div>
+<!--{/if}-->
+

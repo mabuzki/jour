@@ -1,0 +1,170 @@
+<div id="l_space_hd">
+	<!---{eval print_r($_G['basescript'])}-->
+	<!---{eval print_r(CURMODULE)}-->
+	
+	
+	<div id="l_space_banner">
+		<div id="hd"></div>
+	</div>
+
+	<div id="l_space_userinfo">
+		<div id="l_userinfo_shade"></div>
+		<div id="l_space_username">
+			<a href="home.php?mod=space&uid=$space[uid]" style="margin-right: 10px;">{$space[username]}</a>
+			<!--{if $space['gender'] == 1}-->
+				<em class="gender_male_icon"></em>
+			<!--{elseif $space['gender'] == 2}-->
+				<em class="gender_female_icon"></em>
+			<!--{/if}-->
+		</div>
+		<div id="l_space_avatar">
+			<div class="l_space_avatar">
+			<!--{if $space['self']}-->
+				<a href="home.php?mod=spacecp&ac=avatar" id="l_space_avatar_chage_large" title="修改头像"><!--{avatar($space[uid],big)}--></a>
+			<!--{else}-->
+				<a href="home.php?mod=space&uid=$space[uid]"><!--{avatar($space[uid],big)}--></a>
+			<!--{/if}-->
+			</div>
+		</div>
+		<div class="l_space_views">
+			<!--{eval space_merge($space, 'count'); }-->{$_G['style']['l_space_views']} $space['views']
+		</div>
+		<div class="l_banner_nav">
+		<!--{if $space['self']}-->
+			<a href="home.php?mod=space&do=index&diy=yes" class="y"><!--{echo lang('space', 'block_profile_diy')}--></a>
+			<a href="home.php?mod=spacecp&ac=profile" class="y"><!--{echo lang('space', 'block_profile_update')}--></a>
+		<!--{else}-->
+			<!--{eval require_once libfile('function/friend');}-->
+			<!--{eval $isfriend = friend_check($uid);}-->
+			<!--{if !$isfriend}-->
+				<a href="home.php?mod=spacecp&ac=friend&op=add&uid=$space[uid]&handlekey=addfriendhk_{$space[uid]}" id="a_friend_li_{$space[uid]}" onclick="showWindow(this.id, this.href, 'get', 0);"><!--{echo lang('space', 'block_profile_friend_add')}--></a>
+			<!--{else}-->
+				<a href="home.php?mod=spacecp&ac=friend&op=ignore&uid=$space[uid]&handlekey=ignorefriendhk_{$space[uid]}" id="a_ignore_{$space[uid]}" onclick="showWindow(this.id, this.href, 'get', 0);"><!--{echo lang('space', 'block_profile_friend_ignore')}--></a>
+				<a href="home.php?mod=spacecp&ac=pm&op=showmsg&handlekey=showmsg_$space[uid]&touid=$space[uid]&pmid=0&daterange=2" id="a_sendpm_$space[uid]" onclick="showWindow('showMsgBox', this.href, 'get', 0)"><!--{echo lang('space', 'block_profile_sendmessage')}--></a>
+			<!--{/if}-->
+				<a href="home.php?mod=spacecp&ac=poke&op=send&uid=$value[uid]" id="a_poke_$key" onclick="showWindow(this.id, this.href, 'get', 0);" title="{lang say_hi}">{lang say_hi}</a>	
+		<!--{/if}-->
+		</div>
+		<h8>
+			<!--{eval $memberfieldforum = C::t('common_member_field_forum')->fetch($space['uid']);}-->
+			<!--{eval $space['medals'] = $memberfieldforum['medals']}-->
+			<!--{eval $space['customshow'] = $memberfieldforum['customstatus']}-->
+			<!--{eval $space['sightml'] = $memberfieldforum['sightml']}-->
+			<!--{eval unset($memberfieldforum);}-->
+			<!--{if $space['medals']}-->							
+				<!--{eval}-->
+				<!--
+					loadcache('medals');
+					foreach($space['medals'] = explode("\t", $space['medals']) as $key => $medalid) {
+						list($medalid, $medalexpiration) = explode("|", $medalid);
+						if(isset($_G['cache']['medals'][$medalid]) && (!$medalexpiration || $medalexpiration > TIMESTAMP)) {
+							$usermedals .= '<img src="'.STATICURL.'image/common/'.$_G['cache']['medals'][$medalid]['image'].'" title="'.$_G['cache']['medals'][$medalid]['name'].'" />&nbsp;';
+						}
+					}
+				-->
+				<!--{/eval}-->
+			<!--{/if}-->
+			
+			<!--{eval $space['group'] = $_G['cache']['usergroups'][$space['groupid']]; }-->
+			<a class="l_grouptitle">$space['group']['grouptitle']</a>
+			$usermedals
+			<span class="l_space_userurl"><!--{eval space_merge($space, 'field_home'); $space[domainurl] = space_domain($space);getuserdiydata($space);$personalnv = isset($_G['blockposition']['nv']) ? $_G['blockposition']['nv'] : '';}--><a id="domainurl" href="$space[domainurl]" onclick="setCopy('$space[domainurl]', '{lang copy_space_address}');return false;">$space[domainurl]</a></span>
+			<!--{if $space['customshow']}-->
+			<br>
+			<a class="customshow" href="home.php?mod=spacecp&ac=profile&op=info">$space['customshow']</a>
+			<!--{else}-->
+			<!--{if $space['self']}-->
+			<br>
+			<a href="home.php?mod=spacecp&ac=profile&op=info" class="customshow_edit">{$_G['style']['customshow_edit']}</a>
+			<!--{/if}-->
+			<!--{/if}-->
+			<span>&nbsp;&nbsp;</span>
+		</h8>
+		<!--{if $space['sightml']}-->
+		<div class="l_spacenote">$space['sightml']</div>
+		<!--{/if}-->
+		<h7>
+			<!--{eval $l_location['$uid'] = C::t('common_member_profile')->fetch($space['uid']);}-->
+			<!--{if $l_location['$uid']['resideprovince'] && $l_location['$uid']['residecity']}-->
+				<a href="http://ditu.google.com/maps?hl=zh-CN&q=$l_location['$uid']['resideprovince'] $l_location['$uid']['residecity']" class="l_location" target="_blank">$l_location['$uid']['resideprovince'] $l_location['$uid']['residecity']</a>
+			<!--{else}-->
+				<!--{if $space['self']}-->
+					<a class="l_location">{$_G['style']['l_location_null']}</a><a href="home.php?mod=spacecp&ac=profile" class="uplocation">{$_G['style']['uplocation']}</a>
+				<!--{else}-->
+					<a class="l_location">{$_G['style']['l_location_null']}</a>
+				<!--{/if}-->
+			<!--{/if}-->
+			<p>
+				{lang credits}<a href="home.php?mod=spacecp&ac=credit">&nbsp;&nbsp;{$space[credits]}</a>
+			</p>
+		</h7>
+	</div>
+	<div id="l_space_homenav">
+		<span class="l_space_mainpage">
+		<!--{if empty($personalnv['banitems']['index'])}-->
+			<!--{if $_G['adminid'] == 1 && $_G['setting']['allowquickviewprofile'] == 1}-->
+				<a href="home.php?mod=space&uid=$space[uid]&do=index&view=admin"><!--{if !empty($personalnv['items']['index'])}-->$personalnv['items']['index']<!--{else}-->{lang main_page}<!--{/if}--></a>
+			<!--{else}-->
+				<a href="home.php?mod=space&uid=$space[uid]&do=index"><!--{if !empty($personalnv['items']['index'])}-->$personalnv['items']['index']<!--{else}-->{lang main_page}<!--{/if}--></a>
+			<!--{/if}-->
+		<!--{/if}-->
+		</span>
+		
+		<!--{if checkperm('allowbanuser') || checkperm('allowedituser') || $_G[adminid] == 1}-->
+			<!--{eval $encodeusername = rawurlencode($space['username']);}-->
+			<div id="l_space_console" style="float:right;">
+			<!--{if checkperm('allowbanuser') || checkperm('allowedituser')}-->
+				<!--{if checkperm('allowbanuser')}-->
+					<a href="{if $_G[adminid] == 1}admin.php?action=members&operation=ban&username=$encodeusername&frames=yes{else}forum.php?mod=modcp&action=member&op=ban&uid=$space[uid]{/if}" id="usermanageli" onmouseover="showMenu(this.id)" class="showmenu" target="_blank">{lang member_manage}</a>
+				<!--{else}-->
+					<a href="{if $_G[adminid] == 1}admin.php?action=members&operation=search&username=$encodeusername&submit=yes&frames=yes{else}forum.php?mod=modcp&action=member&op=edit&uid=$space[uid]{/if}" id="usermanageli" onmouseover="showMenu(this.id)" class="showmenu" target="_blank">{lang member_manage}</a>
+				<!--{/if}-->
+			<!--{/if}-->
+				
+			<!--{if $_G[adminid] == 1}-->
+				<a href="forum.php?mod=modcp&action=thread&op=post&do=search&searchsubmit=1&users=$encodeusername" id="umanageli" onmouseover="showMenu(this.id)" class="showmenu">{lang content_manage}</a>
+			<!--{/if}-->
+		</div>
+			<!--{if checkperm('allowbanuser') || checkperm('allowedituser')}-->
+				<ul id="usermanageli_menu" class="p_pop" style="width: 80px; display:none;">
+					<!--{if checkperm('allowbanuser')}-->
+						<li><a href="{if $_G[adminid] == 1}admin.php?action=members&operation=ban&username=$encodeusername&frames=yes{else}forum.php?mod=modcp&action=member&op=ban&uid=$space[uid]{/if}" target="_blank">{lang user_ban}</a></li>
+					<!--{/if}-->
+					<!--{if checkperm('allowedituser')}-->
+						<li><a href="{if $_G[adminid] == 1}admin.php?action=members&operation=search&username=$encodeusername&submit=yes&frames=yes{else}forum.php?mod=modcp&action=member&op=edit&uid=$space[uid]{/if}" target="_blank">{lang user_edit}</a></li>
+					<!--{/if}-->
+				</ul>
+			<!--{/if}-->
+			<!--{if $_G['adminid'] == 1}-->
+				<ul id="umanageli_menu" class="p_pop" style="width: 80px; display:none;">
+					<li><a href="forum.php?mod=modcp&action=thread&op=post&searchsubmit=1&do=search&users=$encodeusername" target="_blank">{lang manage_post}</a></li>
+				<!--{if helper_access::check_module('doing')}-->
+					<li><a href="admin.php?action=doing&searchsubmit=1&detail=1&search=true&fromumanage=1&users=$encodeusername" target="_blank">{lang manage_doing}</a></li>
+				<!--{/if}-->
+				<!--{if helper_access::check_module('blog')}-->
+					<li><a href="admin.php?action=blog&searchsubmit=1&detail=1&search=true&fromumanage=1&uid=$space[uid]" target="_blank">{lang manage_blog}</a></li>
+				<!--{/if}-->
+				<!--{if helper_access::check_module('feed')}-->
+					<li><a href="admin.php?action=feed&searchsubmit=1&detail=1&fromumanage=1&uid=$space[uid]" target="_blank">{lang manage_feed}</a></li>
+				<!--{/if}-->
+				<!--{if helper_access::check_module('album')}-->
+					<li><a href="admin.php?action=album&searchsubmit=1&detail=1&search=true&fromumanage=1&uid=$space[uid]" target="_blank">{lang manage_album}</a></li>
+					<li><a href="admin.php?action=pic&searchsubmit=1&detail=1&search=true&fromumanage=1&users=$encodeusername" target="_blank">{lang manage_pic}</a></li>
+				<!--{/if}-->
+				<!--{if helper_access::check_module('wall')}-->
+					<li><a href="admin.php?action=comment&searchsubmit=1&detail=1&fromumanage=1&authorid=$space[uid]" target="_blank">{lang manage_comment}</a></li>
+				<!--{/if}-->
+				<!--{if helper_access::check_module('share')}-->
+					<li><a href="admin.php?action=share&searchsubmit=1&detail=1&search=true&fromumanage=1&uid=$space[uid]" target="_blank">{lang manage_share}</a></li>
+				<!--{/if}-->
+				<!--{if helper_access::check_module('group')}-->
+					<li><a href="admin.php?action=threads&operation=group&searchsubmit=1&detail=1&search=true&fromumanage=1&users=$encodeusername" target="_blank">{lang manage_group_threads}</a></li>
+					<li><a href="admin.php?action=prune&searchsubmit=1&detail=1&operation=group&fromumanage=1&users=$encodeusername" target="_blank">{lang manage_group_prune}</a></li>
+				<!--{/if}-->
+				</ul>
+			<!--{/if}-->
+		<!--{/if}-->
+		
+	</div>
+</div>
+

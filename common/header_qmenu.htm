@@ -1,0 +1,72 @@
+<div id="qmenu_menu" class="p_pop {if !$_G['uid']}blk{/if}" style="position: fixed !important; top:47px !important; display: none;">
+	<!--{hook/global_qmenu_top}-->
+	<!--{if $_G['uid']}-->
+	<div class="l_qmenu_info">
+		<div class="l_qmenu_avatar z">
+			<a href="home.php?mod=spacecp&ac=avatar"><!--{avatar($_G[uid],middle)}--></a>
+		</div>
+		
+		<div class="l_qmenu_status y">
+			<div class="l_qmenu_loginstatus">
+				<!--{if $_G['group']['allowinvisible']}-->
+				<span id="loginstatus">
+					<a id="loginstatusid" href="member.php?mod=switchstatus" title="{lang login_switch_invisible_mode}" onclick="ajaxget(this.href, 'loginstatus');return false;" class="xi2"></a>
+				</span>
+				<!--{/if}-->
+
+				<a href="home.php?mod=space&do=pm" id="pm_ntc">{lang pm_center}<!--{if $_G[member][newpm]}-->($_G[member][newpm])<!--{/if}--></a>
+				<a href="home.php?mod=space&do=notice" id="myprompt"{if $_G[member][newprompt]}{/if} >{lang remind}<!--{if $_G[member][newprompt]}-->($_G[member][newprompt])<!--{/if}--></a><span id="myprompt_check"></span>
+			</div>
+
+			<div class="l_qmenu_extra">
+				<!--{hook/global_usernav_extra3}-->
+				<a href="home.php?mod=spacecp&ac=credit&showcredit=1"{if !$_G[setting][bbclosed]} {/if}>{lang credits}: $_G[member][credits]</a>
+				<a href="home.php?mod=spacecp&ac=usergroup">{lang usergroup}: $_G[group][grouptitle]</a>
+			</div>
+		</div>
+	</div>
+	
+	<div style="clear:both"></div>
+	<div class="l_qmenu_setting">
+		<!--{hook/global_usernav_extra4}--><a href="home.php?mod=spacecp">{$_G['style']['l_qmenu_setting_edit']}</a>
+		<a href="home.php?mod=spacecp&ac=profile&op=password">{$_G['style']['l_qmenu_setting_pass']}</a>
+		<!--{if $_G['setting']['taskon'] && !empty($_G['cookie']['taskdoing_'.$_G['uid']])}--><a href="home.php?mod=task&item=doing" id="task_ntc" class="new">{lang task_doing}</a><!--{/if}-->
+		<!--{if ($_G['group']['allowmanagearticle'] || $_G['group']['allowpostarticle'] || $_G['group']['allowdiy'] || getstatus($_G['member']['allowadmincp'], 4) || getstatus($_G['member']['allowadmincp'], 6) || getstatus($_G['member']['allowadmincp'], 2) || getstatus($_G['member']['allowadmincp'], 3))}-->
+			<a href="portal.php?mod=portalcp"><!--{if $_G['setting']['portalstatus'] }-->{lang portal_manage}<!--{else}-->{lang portal_block_manage}<!--{/if}--></a>
+		<!--{/if}-->
+		<!--{if $_G['uid'] && $_G['group']['radminid'] > 1}-->
+			<a href="forum.php?mod=modcp&fid=$_G[fid]" target="_blank">{lang forum_manager}</a>
+		<!--{/if}-->
+		<!--{if $_G['uid'] && $_G['adminid'] == 1 && $_G['setting']['cloud_status']}-->
+			<a href="admin.php?frames=yes&action=cloud&operation=applist" target="_blank">{lang cloudcp}</a>
+		<!--{/if}-->
+		<!--{if $_G['uid'] && getstatus($_G['member']['allowadmincp'], 1)}-->
+			<a href="admin.php" target="_blank">{lang admincp}</a>
+		<!--{/if}-->
+		<!--{hook/global_usernav_extra2}-->
+	</div>
+	<div style="clear:both"></div>
+		<ul class="cl nav l_qmenu_nav">
+			<!--{loop $_G['setting']['mynavs'] $nav}-->
+				<!--{if $nav['available'] && (!$nav['level'] || ($nav['level'] == 1 && $_G['uid']) || ($nav['level'] == 2 && $_G['adminid'] > 0) || ($nav['level'] == 3 && $_G['adminid'] == 1))}-->
+					<li>$nav[code]</li>
+				<!--{/if}-->
+			<!--{/loop}-->
+		</ul>
+	<div style="clear:both"></div>
+	<div class="l_qmenu_logout">
+		<a href="member.php?mod=logging&action=logout&formhash={FORMHASH}">{lang logout}</a>
+	</div>
+	<!--{elseif $_G[connectguest]}-->
+		<div class="ptm pbw hm">
+			{lang connect_fill_profile_to_visit}
+		</div>
+	<!--{else}-->
+		<div class="ptm pbw hm">
+			{lang my_nav_login}
+		</div>
+	<!--{/if}-->
+	<!--{hook/global_qmenu_bottom}-->
+</div>
+
+
